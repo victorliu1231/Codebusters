@@ -56,6 +56,18 @@ public class Key{
         return ans;
     }
 
+    public char getCipherForPlain(String plainLetter){
+        if (plaintextL.contains(plainLetter)){ //if lowercase
+            int index = plaintextL.indexOf(plainLetter);
+            return ciphertextL.charAt(index);
+        }
+        else {//if uppercase
+            int index = plaintextU.indexOf(plainLetter);
+            //System.out.println("plainLetter: "+plainLetter+", index: "+index);
+            return ciphertextU.charAt(index);
+        }
+    }
+
     public String plaintextL(){
         return plaintextL;
     }
