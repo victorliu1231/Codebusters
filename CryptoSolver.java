@@ -187,6 +187,14 @@ public class CryptoSolver {
                     } else {
                         currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()+1); //else next cryptochar
                     }
+                    for (int i = 0; i < CryptoCharacters.size(); i++){ //cleans the board of terminal color before replacing stuff with blue
+                        CryptoCharacter cleaningCryptoChar = CryptoCharacters.get(i);
+                        if (letters.contains(cleaningCryptoChar.character())){
+                            terminal.moveCursor(cleaningCryptoChar.x(), cleaningCryptoChar.y());
+                            terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
+                            terminal.putCharacter(' '); //find a way to find previous guesses
+                        }
+                    }
                     if (currentCryptoChar.index() != 0){
                         if (letters.contains(CryptoCharacters.get(currentCryptoChar.index()-1).character())){ //if previous character isn't in list
                             terminal.moveCursor(currentCryptoChar.x()-1, currentCryptoChar.y());
@@ -225,6 +233,14 @@ public class CryptoSolver {
                         currentCryptoChar = CryptoCharacters.get(CryptoCharacters.size() - 1); //then loop back to end
                     } else {
                         currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()-1); //else last cryptochar
+                    }
+                    for (int i = 0; i < CryptoCharacters.size(); i++){ //cleans the board of terminal color before replacing stuff with blue
+                        CryptoCharacter cleaningCryptoChar = CryptoCharacters.get(i);
+                        if (letters.contains(cleaningCryptoChar.character())){
+                            terminal.moveCursor(cleaningCryptoChar.x(), cleaningCryptoChar.y());
+                            terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
+                            terminal.putCharacter(' '); //find a way to find previous guesses
+                        }
                     }
                     if (currentCryptoChar.index() != CryptoCharacters.size() - 1){
                         if (letters.contains(CryptoCharacters.get(currentCryptoChar.index()+1).character())){ //if next character isn't in list
