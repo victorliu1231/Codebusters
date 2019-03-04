@@ -19,7 +19,7 @@ public class Key{
         arrayListTheString(aryPtxtUpper, plaintextU);
         arrayListTheString(aryPtxtLower, ciphertextL);
         arrayListTheString(aryCtxtUpper, ciphertextU);
-        seed = System.currentTimeMillis() % 100000;
+        seed = System.currentTimeMillis();
     }
 
     public Key(int seed){
@@ -63,7 +63,6 @@ public class Key{
         }
         else {//if uppercase
             int index = plaintextU.indexOf(plainLetter);
-            //System.out.println("plainLetter: "+plainLetter+", index: "+index);
             return ciphertextU.charAt(index);
         }
     }

@@ -8,7 +8,7 @@ import java.io.FileInputStream;
 //use interfaces if expanding this program to patristocrats
 
 public class Generator{
-    public static void main(String[]args){
+    /*public static void main(String[]args){
         try{
             Cipher c1 = generate("xeno1.dat",1);
             System.out.println(c1); System.out.println();
@@ -16,9 +16,9 @@ public class Generator{
         } catch (FileNotFoundException e){
             System.out.println("Use a correct filename!");
         }
-    }
+    }*/
 
-    public static Cipher generate(String filename) throws FileNotFoundException{
+    public static Xenocrypt generate(String filename) throws FileNotFoundException{
         File file = new File(filename);
         Scanner s = new Scanner(new FileInputStream(file));
         ArrayList<String> lines = new ArrayList<>();
@@ -26,20 +26,20 @@ public class Generator{
             lines.add(s.nextLine());
         }
         Random r = new Random();
-        Cipher cip = new Xenocrypt(lines.get(Math.abs(r.nextInt(lines.size()))));
+        Xenocrypt cip = new Xenocrypt(lines.get(Math.abs(r.nextInt(lines.size()))));
         s.close();
         return cip;
     }
 
-    public static Cipher generate(String filename, int seed) throws FileNotFoundException{
+    public static Xenocrypt generate(String filename, int seed) throws FileNotFoundException{
         File file = new File(filename);
         Scanner s = new Scanner(new FileInputStream(file));
         ArrayList<String> lines = new ArrayList<>();
         while (s.hasNextLine()){
             lines.add(s.nextLine());
         }
-        Random r = new Random();
-        Cipher cip = new Xenocrypt(lines.get(Math.abs(r.nextInt(lines.size()))), seed); //will diversify to patristos later?
+        Random r = new Random(seed);
+        Xenocrypt cip = new Xenocrypt(lines.get(Math.abs(r.nextInt(lines.size()))), seed); //will diversify to patristos later?
         s.close();
         return cip;
     }
