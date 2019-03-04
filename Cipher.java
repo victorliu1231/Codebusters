@@ -26,11 +26,7 @@ public class Cipher{
     public String solution(){
         String ans = "";
         for (int i = 0; i < plainText.length(); i++){
-            if (plainText.charAt(i) == '\u00e1'){
-                ans+= '\u00e1';
-            } else {
-                ans+= plainText.charAt(i);
-            }
+            ans+= plainText.charAt(i);
         }
         return ans;
     }

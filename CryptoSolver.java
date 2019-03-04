@@ -26,7 +26,7 @@ public class CryptoSolver {
     public static int y = 10;
     public static String crypto;
     public static ArrayList<CryptoCharacter> CryptoCharacters = new ArrayList<CryptoCharacter>();
-    public static String letters = "abcdefghijklmnopqrstuvwxyz\u00e1\u00e9\u00ED\u00F3\u00FA\u00FC\u00F1"+"ABCDEFGHIJKLMNOPQRSTUVWXYZ\u00C1\u00c9\u00CD\u00D3\u00DA\u00DC\u00D1";
+    public static String letters = "abcdefghijklmnopqrstuvwxyz"+"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     public static void putString(int r, int c, String s){
         terminal.moveCursor(r,c);
@@ -54,14 +54,14 @@ public class CryptoSolver {
         terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
         for (int i = 0; i < crypto.length(); i++){
             terminal.moveCursor(x,y);
-            if (crypto.charAt(i) == ' '){
+            if (!letters.contains(crypto.substring(i,i+1))){
                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
                 terminal.putCharacter(' ');
                 terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
             } else {
                 terminal.putCharacter(' ');
             }
-            CryptoCharacters.add(new CryptoCharacter(x,y,i,crypto.charAt(i)));
+            CryptoCharacters.add(new CryptoCharacter(x,y,i,crypto.substring(i,i+1)));
             x++;
         }
         y++;
@@ -78,7 +78,7 @@ public class CryptoSolver {
     //pre-condition: the character inserted must be part of the "letters" container
     //pre-condition: x and y are actually on the pink or green background color coordinates
     public static void placeLetter(int x, int y, Key key){
-        char desiredChar = '\0';
+        String desiredChar = null;
         terminal.moveCursor(x,y);
         for (int i = 0; i < CryptoCharacters.size(); i++){
             CryptoCharacter cryptoChar = CryptoCharacters.get(i);
@@ -89,7 +89,7 @@ public class CryptoSolver {
         char letter = bashKeyCode(key);
         for (int i = 0; i < CryptoCharacters.size(); i++){
             CryptoCharacter cryptoChar = CryptoCharacters.get(i);
-            if (cryptoChar.character() == desiredChar){
+            if (cryptoChar.character().equals(desiredChar)){
                 terminal.moveCursor(cryptoChar.x(),cryptoChar.y());
                 terminal.applyBackgroundColor(Terminal.Color.GREEN);
                 terminal.putCharacter(letter);
@@ -178,18 +178,18 @@ public class CryptoSolver {
                         currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()+1); //else next cryptochar
                     }
                     if (currentCryptoChar.index() != 0){
-                        if (CryptoCharacters.get(currentCryptoChar.index()-1).character() != ' '){ //if previous character isn't space
+                        if (letters.contains(CryptoCharacters.get(currentCryptoChar.index()-1).character())){ //if previous character isn't in list
                             terminal.moveCursor(currentCryptoChar.x()-1, currentCryptoChar.y());
                             terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
                             terminal.putCharacter(' '); //change later to preserve previous guesses
                         }
                     } else {
-                        terminal.moveCursor(CryptoCharacters.get(CryptoCharacters.size() - 1).x(), CryptoCharacters.get(CryptoCharacters.size()-1).y()); //moves to end
+                        terminal.moveCursor(CryptoCharacters.get(CryptoCharacters.size() - 2).x(), CryptoCharacters.get(CryptoCharacters.size()-1).y()); //moves to end
                         terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
                         terminal.putCharacter(' '); //change later to preserve previous guesses
                     }
                     terminal.moveCursor(currentCryptoChar.x(), currentCryptoChar.y());
-                    if (currentCryptoChar.character() != ' '){
+                    if (letters.contains(currentCryptoChar.character())){
                         terminal.applyBackgroundColor(Terminal.Color.BLUE);
                         terminal.putCharacter(' '); //change later to preserve previous guesses
                     }
@@ -202,8 +202,8 @@ public class CryptoSolver {
                         currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()-1); //else last cryptochar
                     }
                     if (currentCryptoChar.index() != CryptoCharacters.size() - 1){
-                        if (CryptoCharacters.get(currentCryptoChar.index()+1).character() != ' '){ //if next character isn't space
-                        terminal.moveCursor(currentCryptoChar.x()+1, currentCryptoChar.y());
+                        if (letters.contains(CryptoCharacters.get(currentCryptoChar.index()+1).character())){ //if next character isn't in list
+                            terminal.moveCursor(currentCryptoChar.x()+1, currentCryptoChar.y());
                             terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
                             terminal.putCharacter(' '); //change later to preserve previous guesses
                         }
@@ -213,7 +213,7 @@ public class CryptoSolver {
                         terminal.putCharacter(' '); //change later to preserve previous guesses
                     }
                     terminal.moveCursor(currentCryptoChar.x(), currentCryptoChar.y());
-                    if (currentCryptoChar.character() != ' '){
+                    if (letters.contains(currentCryptoChar.character())){
                         terminal.applyBackgroundColor(Terminal.Color.BLUE);
                         terminal.putCharacter(' '); //change later to preserve previous guesses
                     }

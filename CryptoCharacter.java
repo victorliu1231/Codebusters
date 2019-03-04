@@ -1,10 +1,10 @@
 public class CryptoCharacter{
     private int x;
     private int y;
-    private char character;
+    private String character;
     private int index;
 
-    public CryptoCharacter(int x, int y, int index, char c){
+    public CryptoCharacter(int x, int y, int index, String c){
         this.x = x;
         this.y = y;
         character = c;
@@ -19,7 +19,7 @@ public class CryptoCharacter{
         return y;
     }
 
-    public char character(){
+    public String character(){
         return character;
     }
 
