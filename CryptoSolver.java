@@ -22,11 +22,13 @@ public class CryptoSolver {
     public static Keyy keyy;
     public static int x = 10;
     public static int y = 10;
+    public static String crypto;
+    public static String letters = "abcdefghijklmnopqrstuvwxyz\u00e1\u00e9\u00ED\u00F3\u00FA\u00FC\u00F1"+"ABCDEFGHIJKLMNOPQRSTUVWXYZ\u00C1\u00c9\u00CD\u00D3\u00DA\u00DC\u00D1";
 
     public static void putString(int r, int c, String s){
         terminal.moveCursor(r,c);
         for(int i = 0; i < s.length();i++){
-        terminal.putCharacter(s.charAt(i));
+            terminal.putCharacter(s.charAt(i));
         }
     }
 
@@ -45,7 +47,7 @@ public class CryptoSolver {
 
     public static void putCryptoOnScreen(Xenocrypt cipher){
         keyy = cipher.key();
-        String crypto = cipher.crypto();
+        crypto = cipher.crypto();
         terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
         for (int i = 0; i < crypto.length(); i++){
             terminal.moveCursor(x,y);
@@ -67,6 +69,11 @@ public class CryptoSolver {
             x++;
         }
         System.out.println(crypto);
+    }
+
+    public static void placeLetter(int r, int c, Key key){
+        terminal.moveCursor(r,c);
+        terminal.putCharacter(bashKeyCode(key));
     }
     
     public static void main(String[] args) {
@@ -96,6 +103,7 @@ public class CryptoSolver {
         boolean toggleTimeDisplay = false;
         long endTime;
         long lastTime = System.currentTimeMillis();
+        putString(5,5,"Press Tab to toggle on display of time!");
 
 
         while(running){
@@ -119,11 +127,12 @@ public class CryptoSolver {
 
             if (key != null)
             {
+                placeLetter(0, 0, key);
                 if (key.getKind() == Key.Kind.Escape){
                     terminal.exitPrivateMode();
                 }
 
-                if (key.getCharacter() == 't'){
+                if (key.getKind() == Key.Kind.Tab){
                     if (!toggleTimeDisplay){
                         endTime = System.currentTimeMillis();
                         lastTime = (endTime - startTime) / 1000;
@@ -144,5 +153,14 @@ public class CryptoSolver {
         }
 
 
+    }
+
+    public static char bashKeyCode(Key key){
+        for (int i = 0; i < letters.length(); i++){
+            if (key.getCharacter() == letters.charAt(i)){
+                return letters.charAt(i);
+            }
+        }
+        return '\0';
     }
 }
