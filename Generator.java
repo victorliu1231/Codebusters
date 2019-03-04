@@ -26,7 +26,9 @@ public class Generator{
             lines.add(s.nextLine());
         }
         Random r = new Random();
-        Xenocrypt cip = new Xenocrypt(lines.get(Math.abs(r.nextInt(lines.size()))));
+        String line = lines.get(Math.abs(r.nextInt(lines.size())));
+        String lineInsert = line.toUpperCase();
+        Xenocrypt cip = new Xenocrypt(lineInsert); //chooses a random line, will diversify to patristos later?
         s.close();
         return cip;
     }
@@ -39,7 +41,9 @@ public class Generator{
             lines.add(s.nextLine());
         }
         Random r = new Random(seed);
-        Xenocrypt cip = new Xenocrypt(lines.get(Math.abs(r.nextInt(lines.size()))), seed); //chooses a random line, will diversify to patristos later?
+        String line = lines.get(Math.abs(r.nextInt(lines.size())));
+        String lineInsert = line.toUpperCase();
+        Xenocrypt cip = new Xenocrypt(lineInsert, seed); //chooses a random line, will diversify to patristos later?
         s.close();
         return cip;
     }

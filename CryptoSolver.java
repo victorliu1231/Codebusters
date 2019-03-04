@@ -26,7 +26,7 @@ public class CryptoSolver {
     public static int y = 10;
     public static String crypto;
     public static ArrayList<CryptoCharacter> CryptoCharacters = new ArrayList<CryptoCharacter>();
-    public static String letters = "abcdefghijklmnopqrstuvwxyz"+"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    public static String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     public static void putString(int r, int c, String s){
         terminal.moveCursor(r,c);
@@ -91,7 +91,7 @@ public class CryptoSolver {
             CryptoCharacter cryptoChar = CryptoCharacters.get(i);
             if (cryptoChar.character().equals(desiredChar)){
                 terminal.moveCursor(cryptoChar.x(),cryptoChar.y());
-                terminal.applyBackgroundColor(Terminal.Color.GREEN);
+                terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
                 terminal.putCharacter(letter);
                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
             }
@@ -126,8 +126,16 @@ public class CryptoSolver {
         long endTime;
         long lastTime = System.currentTimeMillis();
         terminal.moveCursor(10,10);
-        terminal.applyBackgroundColor(Terminal.Color.BLUE);
-        terminal.putCharacter(' ');
+        String desiredChar = CryptoCharacters.get(0).character();
+        for (int i = 0; i < CryptoCharacters.size(); i++){ //makes all the common CryptoChars green
+            CryptoCharacter cryptoChar = CryptoCharacters.get(i);
+            if (cryptoChar.character().equals(desiredChar)){
+                terminal.moveCursor(cryptoChar.x(),cryptoChar.y());
+                terminal.applyBackgroundColor(Terminal.Color.GREEN);
+                terminal.putCharacter(' ');
+                terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
+            }
+        }
         terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
         CryptoCharacter currentCryptoChar = CryptoCharacters.get(0);
         putString(5,5,"Press Tab to toggle on display of time!");
@@ -148,6 +156,7 @@ public class CryptoSolver {
                         seconds = "0" + seconds; //to fix the seconds notation
                     }
                     minutes+= ":"+seconds;
+                    terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
                     putString(15,20,minutes);
                 }
             }
@@ -166,6 +175,7 @@ public class CryptoSolver {
                         lastTime = (endTime - startTime) / 1000;
                         toggleTimeDisplay = true;
                     } else {
+                        terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
                         putString(15,20,"        ");
                         toggleTimeDisplay = false;
                     }
@@ -189,9 +199,24 @@ public class CryptoSolver {
                         terminal.putCharacter(' '); //change later to preserve previous guesses
                     }
                     terminal.moveCursor(currentCryptoChar.x(), currentCryptoChar.y());
+                    x = currentCryptoChar.x();
+                    y = currentCryptoChar.y();
                     if (letters.contains(currentCryptoChar.character())){
-                        terminal.applyBackgroundColor(Terminal.Color.BLUE);
-                        terminal.putCharacter(' '); //change later to preserve previous guesses
+                        for (int i = 0; i < CryptoCharacters.size(); i++){ //finding the CryptoCharacter the mouse is hovering over
+                            CryptoCharacter cryptoChar = CryptoCharacters.get(i);
+                            if (cryptoChar.x() == x && cryptoChar.y() == y){
+                                desiredChar = cryptoChar.character();
+                            }
+                        }
+                        for (int i = 0; i < CryptoCharacters.size(); i++){ //makes all the common CryptoChars green
+                            CryptoCharacter cryptoChar = CryptoCharacters.get(i);
+                            if (cryptoChar.character().equals(desiredChar)){
+                                terminal.moveCursor(cryptoChar.x(),cryptoChar.y());
+                                terminal.applyBackgroundColor(Terminal.Color.GREEN);
+                                terminal.putCharacter(' ');
+                                terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
+                            }
+                        }
                     }
                 }
 
@@ -213,9 +238,24 @@ public class CryptoSolver {
                         terminal.putCharacter(' '); //change later to preserve previous guesses
                     }
                     terminal.moveCursor(currentCryptoChar.x(), currentCryptoChar.y());
+                    x = currentCryptoChar.x();
+                    y = currentCryptoChar.y();
                     if (letters.contains(currentCryptoChar.character())){
-                        terminal.applyBackgroundColor(Terminal.Color.BLUE);
-                        terminal.putCharacter(' '); //change later to preserve previous guesses
+                        for (int i = 0; i < CryptoCharacters.size(); i++){ //finding the CryptoCharacter the mouse is hovering over
+                            CryptoCharacter cryptoChar = CryptoCharacters.get(i);
+                            if (cryptoChar.x() == x && cryptoChar.y() == y){
+                                desiredChar = cryptoChar.character();
+                            }
+                        }
+                        for (int i = 0; i < CryptoCharacters.size(); i++){ //makes all the common CryptoChars green
+                            CryptoCharacter cryptoChar = CryptoCharacters.get(i);
+                            if (cryptoChar.character().equals(desiredChar)){
+                                terminal.moveCursor(cryptoChar.x(),cryptoChar.y());
+                                terminal.applyBackgroundColor(Terminal.Color.GREEN);
+                                terminal.putCharacter(' ');
+                                terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
+                            }
+                        }
                     }
                 }
 
