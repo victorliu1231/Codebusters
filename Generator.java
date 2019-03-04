@@ -39,7 +39,7 @@ public class Generator{
             lines.add(s.nextLine());
         }
         Random r = new Random(seed);
-        Xenocrypt cip = new Xenocrypt(lines.get(Math.abs(r.nextInt(lines.size()))), seed); //will diversify to patristos later?
+        Xenocrypt cip = new Xenocrypt(lines.get(Math.abs(r.nextInt(lines.size()))), seed); //chooses a random line, will diversify to patristos later?
         s.close();
         return cip;
     }

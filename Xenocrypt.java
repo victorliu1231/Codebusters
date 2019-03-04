@@ -21,7 +21,7 @@ public class Xenocrypt extends Cipher{
         String ans = "";
         for (int i = 0; i < str.length(); i++){
             if (!key.plaintextL().contains(str.substring(i,i+1)) && !key.plaintextU().contains(str.substring(i,i+1))){ //if the letter isn't a letter (ex: ".;, ", etc)
-                ans+= " ";
+                ans+= str.substring(i,i+1);
             } else {
                 String letter = str.substring(i,i+1);
                 ans+= key.getCipherForPlain(letter);

@@ -59,9 +59,9 @@ public class CryptoSolver {
                 terminal.putCharacter(' ');
                 terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
             } else {
-                CryptoCharacters.add(new CryptoCharacter(x,y,crypto.charAt(i)));
                 terminal.putCharacter(' ');
             }
+            CryptoCharacters.add(new CryptoCharacter(x,y,i,crypto.charAt(i)));
             x++;
         }
         y++;
@@ -125,6 +125,11 @@ public class CryptoSolver {
         boolean toggleTimeDisplay = false;
         long endTime;
         long lastTime = System.currentTimeMillis();
+        terminal.moveCursor(10,10);
+        terminal.applyBackgroundColor(Terminal.Color.BLUE);
+        terminal.putCharacter(' ');
+        terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
+        CryptoCharacter currentCryptoChar = CryptoCharacters.get(0);
         putString(5,5,"Press Tab to toggle on display of time!");
 
 
@@ -149,7 +154,7 @@ public class CryptoSolver {
 
             if (key != null)
             {
-                placeLetter(10, 10, key);
+                //placeLetter(11, 10, key);
 
                 if (key.getKind() == Key.Kind.Escape){
                     terminal.exitPrivateMode();
@@ -163,6 +168,54 @@ public class CryptoSolver {
                     } else {
                         putString(15,20,"        ");
                         toggleTimeDisplay = false;
+                    }
+                }
+
+                if (key.getKind() == Key.Kind.ArrowRight){
+                    if (currentCryptoChar.index() == CryptoCharacters.size() - 1){ //if it's just on the verge of out of bounds
+                        currentCryptoChar = CryptoCharacters.get(0); //then loop back to beginning
+                    } else {
+                        currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()+1); //else next cryptochar
+                    }
+                    if (currentCryptoChar.index() != 0){
+                        if (CryptoCharacters.get(currentCryptoChar.index()-1).character() != ' '){ //if previous character isn't space
+                            terminal.moveCursor(currentCryptoChar.x()-1, currentCryptoChar.y());
+                            terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
+                            terminal.putCharacter(' '); //change later to preserve previous guesses
+                        }
+                    } else {
+                        terminal.moveCursor(CryptoCharacters.get(CryptoCharacters.size() - 1).x(), CryptoCharacters.get(CryptoCharacters.size()-1).y()); //moves to end
+                        terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
+                        terminal.putCharacter(' '); //change later to preserve previous guesses
+                    }
+                    terminal.moveCursor(currentCryptoChar.x(), currentCryptoChar.y());
+                    if (currentCryptoChar.character() != ' '){
+                        terminal.applyBackgroundColor(Terminal.Color.BLUE);
+                        terminal.putCharacter(' '); //change later to preserve previous guesses
+                    }
+                }
+
+                if (key.getKind() == Key.Kind.ArrowLeft){
+                    if (currentCryptoChar.index() == 0){ //if it's just on the verge of out of bounds
+                        currentCryptoChar = CryptoCharacters.get(CryptoCharacters.size() - 1); //then loop back to end
+                    } else {
+                        currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()-1); //else last cryptochar
+                    }
+                    if (currentCryptoChar.index() != CryptoCharacters.size() - 1){
+                        if (CryptoCharacters.get(currentCryptoChar.index()+1).character() != ' '){ //if next character isn't space
+                        terminal.moveCursor(currentCryptoChar.x()+1, currentCryptoChar.y());
+                            terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
+                            terminal.putCharacter(' '); //change later to preserve previous guesses
+                        }
+                    } else {
+                        terminal.moveCursor(CryptoCharacters.get(0).x(), CryptoCharacters.get(0).y()); //moves to end
+                        terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
+                        terminal.putCharacter(' '); //change later to preserve previous guesses
+                    }
+                    terminal.moveCursor(currentCryptoChar.x(), currentCryptoChar.y());
+                    if (currentCryptoChar.character() != ' '){
+                        terminal.applyBackgroundColor(Terminal.Color.BLUE);
+                        terminal.putCharacter(' '); //change later to preserve previous guesses
                     }
                 }
 
