@@ -16,6 +16,8 @@ import com.googlecode.lanterna.input.InputProvider;
 import com.googlecode.lanterna.input.Key;
 import com.googlecode.lanterna.input.KeyMappingProfile;
 
+import java.util.ArrayList;
+
 
 public class CryptoSolver {
     public static Terminal terminal;
@@ -23,6 +25,7 @@ public class CryptoSolver {
     public static int x = 10;
     public static int y = 10;
     public static String crypto;
+    public static ArrayList<CryptoCharacter> CryptoCharacters = new ArrayList<CryptoCharacter>();
     public static String letters = "abcdefghijklmnopqrstuvwxyz\u00e1\u00e9\u00ED\u00F3\u00FA\u00FC\u00F1"+"ABCDEFGHIJKLMNOPQRSTUVWXYZ\u00C1\u00c9\u00CD\u00D3\u00DA\u00DC\u00D1";
 
     public static void putString(int r, int c, String s){
@@ -56,6 +59,7 @@ public class CryptoSolver {
                 terminal.putCharacter(' ');
                 terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
             } else {
+                CryptoCharacters.add(new CryptoCharacter(x,y,crypto.charAt(i)));
                 terminal.putCharacter(' ');
             }
             x++;
@@ -71,9 +75,27 @@ public class CryptoSolver {
         System.out.println(crypto);
     }
 
-    public static void placeLetter(int r, int c, Key key){
-        terminal.moveCursor(r,c);
-        terminal.putCharacter(bashKeyCode(key));
+    //pre-condition: the character inserted must be part of the "letters" container
+    //pre-condition: x and y are actually on the pink or green background color coordinates
+    public static void placeLetter(int x, int y, Key key){
+        char desiredChar = '\0';
+        terminal.moveCursor(x,y);
+        for (int i = 0; i < CryptoCharacters.size(); i++){
+            CryptoCharacter cryptoChar = CryptoCharacters.get(i);
+            if (cryptoChar.x() == x && cryptoChar.y() == y){
+                desiredChar = cryptoChar.character();
+            }
+        }
+        char letter = bashKeyCode(key);
+        for (int i = 0; i < CryptoCharacters.size(); i++){
+            CryptoCharacter cryptoChar = CryptoCharacters.get(i);
+            if (cryptoChar.character() == desiredChar){
+                terminal.moveCursor(cryptoChar.x(),cryptoChar.y());
+                terminal.applyBackgroundColor(Terminal.Color.GREEN);
+                terminal.putCharacter(letter);
+                terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
+            }
+        }
     }
     
     public static void main(String[] args) {
@@ -127,7 +149,8 @@ public class CryptoSolver {
 
             if (key != null)
             {
-                placeLetter(0, 0, key);
+                placeLetter(10, 10, key);
+
                 if (key.getKind() == Key.Kind.Escape){
                     terminal.exitPrivateMode();
                 }
