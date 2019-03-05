@@ -97,7 +97,6 @@ public class CryptoSolver {
             }
         }
         String letterBeingDeleted = CryptoCharacters.get(0).character(); //only to initialize
-        CryptoCharacter cryptoCharToBeDeleted = CryptoCharacters.get(0);
         char letter = key.getCharacter();
         for (int i = 0; i < CryptoCharacters.size(); i++){
             CryptoCharacter cryptoChar = CryptoCharacters.get(i);
@@ -107,7 +106,7 @@ public class CryptoSolver {
                 if (key.getKind() == Key.Kind.Backspace){
                     terminal.putCharacter(' ');
                     letterBeingDeleted = cryptoChar.guessedChar();
-                    cryptoCharToBeDeleted = cryptoChar;
+                    cryptoChar.setGuessedChar(" ");
                 } else {
                     //checks if letter is already used
                     for (int index = 0; index < menuCryptChars.size(); index++){
@@ -129,11 +128,16 @@ public class CryptoSolver {
         int menuY = 17;
         for (int i = 0; i < letters.length(); i++){
             if (key.getKind() == Key.Kind.Backspace){
-                if (letterBeingDeleted.equals(lowercaseLetters.substring(i,i+1)) && menuCryptChars.get(i).guessedChar().equals("1")){
-                    terminal.moveCursor(menuX, menuY);
-                    terminal.applyForegroundColor(Terminal.Color.DEFAULT);
-                    terminal.putCharacter(StringToChar(letterBeingDeleted.toUpperCase()));
-                    menuCryptChars.get(i).setGuessedChar("0"); //0 indicates letter is not used
+                if (letterBeingDeleted.equals(lowercaseLetters.substring(i,i+1))){
+                    if (menuCryptChars.get(i).guessedChar().equals("1")){
+                        terminal.moveCursor(menuX, menuY);
+                        terminal.applyForegroundColor(Terminal.Color.DEFAULT);
+                        terminal.putCharacter(StringToChar(letterBeingDeleted.toUpperCase()));
+                        menuCryptChars.get(i).setGuessedChar("0"); //0 indicates letter is not used
+                    } else {
+                        int currentGuessedChar = Integer.parseInt(menuCryptChars.get(i).guessedChar());
+                        menuCryptChars.get(i).setGuessedChar(""+(currentGuessedChar-1));
+                    }
                 }
             } else {
                 if (lowercaseLetters.charAt(i) == letter){
@@ -147,7 +151,6 @@ public class CryptoSolver {
             }
             menuX++;
         }
-        cryptoCharToBeDeleted.setGuessedChar(" ");
     }
 
     //pre-condition: String must be in the "letters" category or its corresponding lowercase category and has to have length 1

@@ -46,4 +46,8 @@ public class CryptoCharacter{
     }
 }
 
-//also need to implement autosolution tracker
+//also need to implement autosolution tracker (basically add all guessed chars and checked if it .equals solution())
+//extra features
+//hints
+//the xeno maker giving initial hints
+//letter frequency as an option on main menu mode if the user wants it
