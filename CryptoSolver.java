@@ -58,7 +58,7 @@ public class CryptoSolver {
             terminal.moveCursor(x,y);
             if (!letters.contains(crypto.substring(i,i+1))){
                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
-                terminal.putCharacter(' ');
+                terminal.putCharacter(crypto.charAt(i));
                 terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
             } else {
                 terminal.putCharacter(' ');
@@ -192,14 +192,15 @@ public class CryptoSolver {
 
         boolean running = true;
         long startTime =  System.currentTimeMillis();
+        Xenocrypt cipher = new Xenocrypt("just to initialize");
         try {
             if (args.length == 1){
-                Xenocrypt cipher = Generator.generate(args[0]);
+                cipher = Generator.generate(args[0]);
                 putCryptoOnScreen(cipher);
             }
             if (args.length == 2){
                 int seed = Integer.parseInt(args[1]);
-                Xenocrypt cipher = Generator.generate(args[0], seed);
+                cipher = Generator.generate(args[0], seed);
                 putCryptoOnScreen(cipher);
             }
         } catch (FileNotFoundException e){
@@ -209,7 +210,6 @@ public class CryptoSolver {
         boolean toggleTimeDisplay = false;
         long endTime;
         long lastTime = System.currentTimeMillis();
-        terminal.moveCursor(10,10);
         String desiredChar = CryptoCharacters.get(0).character();
         for (int i = 0; i < CryptoCharacters.size(); i++){ //makes all the common CryptoChars green
             CryptoCharacter cryptoChar = CryptoCharacters.get(i);
@@ -220,11 +220,19 @@ public class CryptoSolver {
                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
             }
         }
+        terminal.applyBackgroundColor(Terminal.Color.BLUE);
+        terminal.moveCursor(10,10);
+        terminal.putCharacter(' ');
         terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
         CryptoCharacter currentCryptoChar = CryptoCharacters.get(0);
         putString(5,5,"Press Tab to toggle on display of time!");
+        putString(5,6,"Press Enter to check your solution!");
         int cursorX = 10;
         int cursorY = 10;
+        String minutes = "";
+        boolean messageTiming = false;
+        long startMessageTimeMillis = 0; //just to initialize
+        System.out.println(cipher.solution()); //will comment out later
 
         while(running){
             Key key = terminal.readInput();
@@ -235,7 +243,7 @@ public class CryptoSolver {
                 timer = timer / 1000;
                 if (timer > lastTime){
                     lastTime = timer;
-                    String minutes = String.valueOf(lastTime / 60);
+                    minutes = String.valueOf(lastTime / 60);
                     String seconds = String.valueOf(lastTime % 60);
                     if (seconds.length() < 2){
                         seconds = "0" + seconds; //to fix the seconds notation
@@ -246,8 +254,18 @@ public class CryptoSolver {
                 }
             }
 
+            if (messageTiming){
+                long endMessageTimeMillis = System.currentTimeMillis();
+                long diffMessageTimeMillis = endMessageTimeMillis - startMessageTimeMillis;
+                if (diffMessageTimeMillis / 1000 > 3){
+                    putString(10,20,"                          ");
+                    messageTiming = false;
+                }
+            }
+
             if (key != null)
             {
+
 
                 if (key.getKind() == Key.Kind.Tab){
                     if (!toggleTimeDisplay){
@@ -260,6 +278,25 @@ public class CryptoSolver {
                         toggleTimeDisplay = false;
                     }
                 }
+
+                if (key.getKind() == Key.Kind.Enter){ //checks the solution
+                    String guessedSolution = "";
+                    for (int i = 0; i < CryptoCharacters.size(); i++){
+                        guessedSolution+= CryptoCharacters.get(i).character();
+                    }
+                    if (guessedSolution.equals(cipher.solution())){
+                        terminal.exitPrivateMode();
+                        System.out.println("Hooray! You solved it!");
+                        System.out.println("Time: "+minutes);
+                        System.out.println();
+                        System.out.println(cipher.solution());
+                    } else {
+                        messageTiming = true;
+                        startMessageTimeMillis = System.currentTimeMillis();
+                        putString(10,20,"Sorry, that's not correct!");
+                    }
+                }
+
 
                 if (key.getKind() == Key.Kind.ArrowRight){
                     if (currentCryptoChar.index() == CryptoCharacters.size() - 1){ //if it's just on the verge of out of bounds
@@ -296,13 +333,16 @@ public class CryptoSolver {
                                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
                             }
                         }
+                        terminal.moveCursor(x,y);
+                        terminal.applyBackgroundColor(Terminal.Color.BLUE);
+                        terminal.putCharacter(StringToChar(currentCryptoChar.guessedChar()));
                     }
                 }
 
                 if (key.getKind() == Key.Kind.ArrowLeft){
                     if (currentCryptoChar.index() == 0){ //if it's just on the verge of out of bounds
                         currentCryptoChar = CryptoCharacters.get(CryptoCharacters.size() - 1); //then loop back to end
-                        cursorX+= CryptoCharacters.size();
+                        cursorX+= CryptoCharacters.size() - 1;
                     } else {
                         currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()-1); //else last cryptochar
                         cursorX--;
@@ -334,6 +374,9 @@ public class CryptoSolver {
                                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
                             }
                         }
+                        terminal.moveCursor(x,y);
+                        terminal.applyBackgroundColor(Terminal.Color.BLUE);
+                        terminal.putCharacter(StringToChar(currentCryptoChar.guessedChar()));
                     }
                 }
 
