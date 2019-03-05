@@ -38,7 +38,6 @@ public class CryptoCharacter{
     }
 }
 
-//cant tab huh
 //also need to implement autosolution tracker
 //and implement which chars been used
 //and implement when u have placed a char that already has been taken (via red mark)

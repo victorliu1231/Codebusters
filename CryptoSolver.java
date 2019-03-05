@@ -27,6 +27,7 @@ public class CryptoSolver {
     public static String crypto;
     public static ArrayList<CryptoCharacter> CryptoCharacters = new ArrayList<CryptoCharacter>();
     public static String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    public static String lowercaseLetters = letters.toLowerCase();
 
     public static void putString(int r, int c, String s){
         terminal.moveCursor(r,c);
@@ -85,6 +86,8 @@ public class CryptoSolver {
                 desiredChar = cryptoChar.character();
             }
         }
+        String letterBeingDeleted = CryptoCharacters.get(0).character(); //only to initialize
+        CryptoCharacter cryptoCharToBeDeleted = CryptoCharacters.get(0);
         char letter = key.getCharacter();
         for (int i = 0; i < CryptoCharacters.size(); i++){
             CryptoCharacter cryptoChar = CryptoCharacters.get(i);
@@ -93,7 +96,8 @@ public class CryptoSolver {
                 terminal.applyBackgroundColor(Terminal.Color.GREEN);
                 if (key.getKind() == Key.Kind.Backspace){
                     terminal.putCharacter(' ');
-                    cryptoChar.setGuessedChar(" ");
+                    letterBeingDeleted = cryptoChar.guessedChar();
+                    cryptoCharToBeDeleted = cryptoChar;
                 } else {
                     terminal.putCharacter(letter);
                     cryptoChar.setGuessedChar(CharToString(letter));
@@ -101,6 +105,28 @@ public class CryptoSolver {
                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
             }
         }
+        //now to indicate which letters have been used
+        int menuX = 5;
+        int menuY = 17;
+        System.out.println(StringToChar(letterBeingDeleted.toUpperCase()));
+        for (int i = 0; i < letters.length(); i++){
+            if (key.getKind() == Key.Kind.Backspace){
+                if (letterBeingDeleted.equals(lowercaseLetters.substring(i,i+1))){
+                    terminal.moveCursor(menuX, menuY);
+                    terminal.applyForegroundColor(Terminal.Color.DEFAULT);
+                    terminal.putCharacter(StringToChar(letterBeingDeleted.toUpperCase()));
+                }
+            } else {
+                if (lowercaseLetters.charAt(i) == letter){
+                    terminal.moveCursor(menuX,menuY);
+                    terminal.applyForegroundColor(Terminal.Color.BLUE);
+                    terminal.putCharacter(StringToChar(CharToString(letter).toUpperCase()));
+                    terminal.applyForegroundColor(Terminal.Color.DEFAULT);
+                }
+            }
+            menuX++;
+        }
+        cryptoCharToBeDeleted.setGuessedChar(" ");
     }
 
     //pre-condition: String must be in the "letters" category or its corresponding lowercase category and has to have length 1
@@ -108,7 +134,6 @@ public class CryptoSolver {
         if (str.length() != 1){
             return '\0';
         }
-        String lowercaseLetters = letters.toLowerCase();
         for (int i = 0; i < letters.length(); i++){
             if (letters.substring(i,i+1).equals(str)){
                 return letters.charAt(i);
@@ -122,7 +147,6 @@ public class CryptoSolver {
 
     //pre-condition: char must be in the "letters" category or lowercase part of it
     public static String CharToString(char c){
-        String lowercaseLetters = letters.toLowerCase();
         for (int i = 0; i < letters.length(); i++){
             if (letters.charAt(i) == c){
                 return letters.substring(i,i+1);
@@ -175,6 +199,7 @@ public class CryptoSolver {
         terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
         CryptoCharacter currentCryptoChar = CryptoCharacters.get(0);
         putString(5,5,"Press Tab to toggle on display of time!");
+        putString(5,17,letters);
         int cursorX = 10;
         int cursorY = 10;
 
@@ -304,7 +329,7 @@ public class CryptoSolver {
                     }
                 }
 
-                if (letters.toLowerCase().contains(CharToString(key.getCharacter()))){
+                if (lowercaseLetters.contains(CharToString(key.getCharacter()))){
                     for (int i = 0; i < CryptoCharacters.size(); i++){
                         CryptoCharacter parsingChar = CryptoCharacters.get(i);
                         if (cursorX == parsingChar.x() && cursorY == parsingChar.y()){
