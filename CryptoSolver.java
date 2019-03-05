@@ -91,8 +91,13 @@ public class CryptoSolver {
             if (cryptoChar.character().equals(desiredChar)){
                 terminal.moveCursor(cryptoChar.x(),cryptoChar.y());
                 terminal.applyBackgroundColor(Terminal.Color.GREEN);
-                terminal.putCharacter(letter);
-                cryptoChar.setGuessedChar(CharToString(letter));
+                if (key.getKind() == Key.Kind.Backspace){
+                    terminal.putCharacter(' ');
+                    cryptoChar.setGuessedChar(" ");
+                } else {
+                    terminal.putCharacter(letter);
+                    cryptoChar.setGuessedChar(CharToString(letter));
+                }
                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
             }
         }
@@ -286,6 +291,17 @@ public class CryptoSolver {
 
                 if (key.getKind() == Key.Kind.Escape){
                     terminal.exitPrivateMode();
+                }
+
+                if (key.getKind() == Key.Kind.Backspace){
+                    for (int i = 0; i < CryptoCharacters.size(); i++){
+                        CryptoCharacter parsingChar = CryptoCharacters.get(i);
+                        if (cursorX == parsingChar.x() && cursorY == parsingChar.y()){
+                            if (letters.contains(parsingChar.character())){ //if your current position isn't hovering over an empty space...
+                                placeLetter(cursorX, cursorY, key);
+                            }
+                        }
+                    }
                 }
 
                 if (letters.toLowerCase().contains(CharToString(key.getCharacter()))){
