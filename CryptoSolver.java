@@ -209,6 +209,15 @@ public class CryptoSolver {
             cursorX = 10;
         } else {
             currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()+1); //else next cryptochar
+            while (!letters.contains(currentCryptoChar.character())){
+                if (currentCryptoChar.index() == CryptoCharacters.size() - 1){ //if it's just on the verge of out of bounds
+                    currentCryptoChar = CryptoCharacters.get(0); //then loop back to beginning
+                    cursorX = 9;
+                } else {
+                    currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()+1); //to autoskip spaces
+                    cursorX++;
+                }
+            }
             cursorX++;
         }
         for (int i = 0; i < CryptoCharacters.size(); i++){ //cleans the board of terminal color before replacing stuff with magenta
@@ -372,6 +381,10 @@ public class CryptoSolver {
                         cursorX+= CryptoCharacters.size() - 1;
                     } else {
                         currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()-1); //else last cryptochar
+                        while (!letters.contains(currentCryptoChar.character())){
+                            currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()-1); //to autoskip spaces
+                            cursorX--;
+                        }
                         cursorX--;
                     }
                     for (int i = 0; i < CryptoCharacters.size(); i++){ //cleans the board of terminal color before replacing stuff with blue
