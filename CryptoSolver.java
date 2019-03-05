@@ -96,6 +96,7 @@ public class CryptoSolver {
                 desiredChar = cryptoChar.character();
             }
         }
+        String replacedLetter = ""; //only to initialize
         String letterBeingDeleted = CryptoCharacters.get(0).character(); //only to initialize
         char letter = key.getCharacter();
         for (int i = 0; i < CryptoCharacters.size(); i++){
@@ -116,6 +117,9 @@ public class CryptoSolver {
                             }
                         }
                     }
+                    //need to make sure that replaced letters also act like they have been removed
+                    replacedLetter = cryptoChar.guessedChar();
+                    //ok I've dealt with the replaced letters issue
                     terminal.putCharacter(letter);
                     cryptoChar.setGuessedChar(CharToString(letter));
                 }
@@ -147,6 +151,17 @@ public class CryptoSolver {
                     terminal.applyForegroundColor(Terminal.Color.DEFAULT);
                     int currentGuessedChar = Integer.parseInt(menuCryptChars.get(i).guessedChar());
                     menuCryptChars.get(i).setGuessedChar(""+(currentGuessedChar+1)); //any number > 0 just indicates letter is already used
+                }
+                if (lowercaseLetters.substring(i,i+1).equals(replacedLetter)){
+                    if (menuCryptChars.get(i).guessedChar().equals("1")){
+                        terminal.moveCursor(menuX, menuY);
+                        terminal.applyForegroundColor(Terminal.Color.DEFAULT);
+                        terminal.putCharacter(StringToChar(replacedLetter.toUpperCase()));
+                        menuCryptChars.get(i).setGuessedChar("0"); //0 indicates letter is not used
+                    } else {
+                        int currentGuessedChar = Integer.parseInt(menuCryptChars.get(i).guessedChar());
+                        menuCryptChars.get(i).setGuessedChar(""+(currentGuessedChar-1));
+                    }
                 }
             }
             menuX++;
