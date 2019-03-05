@@ -72,7 +72,6 @@ public class CryptoSolver {
             terminal.putCharacter(crypto.charAt(i));
             x++;
         }
-        System.out.println(crypto);
     }
 
     //pre-condition: the character inserted must be part of the "letters" container
@@ -86,16 +85,48 @@ public class CryptoSolver {
                 desiredChar = cryptoChar.character();
             }
         }
-        char letter = bashKeyCode(key);
+        char letter = key.getCharacter();
         for (int i = 0; i < CryptoCharacters.size(); i++){
             CryptoCharacter cryptoChar = CryptoCharacters.get(i);
             if (cryptoChar.character().equals(desiredChar)){
                 terminal.moveCursor(cryptoChar.x(),cryptoChar.y());
-                terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
+                terminal.applyBackgroundColor(Terminal.Color.GREEN);
                 terminal.putCharacter(letter);
+                cryptoChar.setGuessedChar(CharToString(letter));
                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
             }
         }
+    }
+
+    //pre-condition: String must be in the "letters" category or its corresponding lowercase category and has to have length 1
+    public static char StringToChar(String str){
+        if (str.length() != 1){
+            return '\0';
+        }
+        String lowercaseLetters = letters.toLowerCase();
+        for (int i = 0; i < letters.length(); i++){
+            if (letters.substring(i,i+1).equals(str)){
+                return letters.charAt(i);
+            }
+            if (lowercaseLetters.substring(i,i+1).equals(str)){
+                return lowercaseLetters.charAt(i);
+            }
+        }
+        return '\0';
+    }
+
+    //pre-condition: char must be in the "letters" category or lowercase part of it
+    public static String CharToString(char c){
+        String lowercaseLetters = letters.toLowerCase();
+        for (int i = 0; i < letters.length(); i++){
+            if (letters.charAt(i) == c){
+                return letters.substring(i,i+1);
+            }
+            if (lowercaseLetters.charAt(i) == c){
+                return lowercaseLetters.substring(i,i+1);
+            }
+        }
+        return " ";
     }
     
     public static void main(String[] args) {
@@ -139,7 +170,8 @@ public class CryptoSolver {
         terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
         CryptoCharacter currentCryptoChar = CryptoCharacters.get(0);
         putString(5,5,"Press Tab to toggle on display of time!");
-
+        int cursorX = 10;
+        int cursorY = 10;
 
         while(running){
             Key key = terminal.readInput();
@@ -163,11 +195,6 @@ public class CryptoSolver {
 
             if (key != null)
             {
-                //placeLetter(11, 10, key);
-
-                if (key.getKind() == Key.Kind.Escape){
-                    terminal.exitPrivateMode();
-                }
 
                 if (key.getKind() == Key.Kind.Tab){
                     if (!toggleTimeDisplay){
@@ -176,7 +203,7 @@ public class CryptoSolver {
                         toggleTimeDisplay = true;
                     } else {
                         terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
-                        putString(15,20,"        ");
+                        putString(15,20,"     ");
                         toggleTimeDisplay = false;
                     }
                 }
@@ -184,27 +211,18 @@ public class CryptoSolver {
                 if (key.getKind() == Key.Kind.ArrowRight){
                     if (currentCryptoChar.index() == CryptoCharacters.size() - 1){ //if it's just on the verge of out of bounds
                         currentCryptoChar = CryptoCharacters.get(0); //then loop back to beginning
+                        cursorX = 10;
                     } else {
                         currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()+1); //else next cryptochar
+                        cursorX++;
                     }
                     for (int i = 0; i < CryptoCharacters.size(); i++){ //cleans the board of terminal color before replacing stuff with blue
                         CryptoCharacter cleaningCryptoChar = CryptoCharacters.get(i);
                         if (letters.contains(cleaningCryptoChar.character())){
                             terminal.moveCursor(cleaningCryptoChar.x(), cleaningCryptoChar.y());
                             terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
-                            terminal.putCharacter(' '); //find a way to find previous guesses
+                            terminal.putCharacter(StringToChar(cleaningCryptoChar.guessedChar()));
                         }
-                    }
-                    if (currentCryptoChar.index() != 0){
-                        if (letters.contains(CryptoCharacters.get(currentCryptoChar.index()-1).character())){ //if previous character isn't in list
-                            terminal.moveCursor(currentCryptoChar.x()-1, currentCryptoChar.y());
-                            terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
-                            terminal.putCharacter(' '); //change later to preserve previous guesses
-                        }
-                    } else {
-                        terminal.moveCursor(CryptoCharacters.get(CryptoCharacters.size() - 2).x(), CryptoCharacters.get(CryptoCharacters.size()-1).y()); //moves to end
-                        terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
-                        terminal.putCharacter(' '); //change later to preserve previous guesses
                     }
                     terminal.moveCursor(currentCryptoChar.x(), currentCryptoChar.y());
                     x = currentCryptoChar.x();
@@ -221,7 +239,7 @@ public class CryptoSolver {
                             if (cryptoChar.character().equals(desiredChar)){
                                 terminal.moveCursor(cryptoChar.x(),cryptoChar.y());
                                 terminal.applyBackgroundColor(Terminal.Color.GREEN);
-                                terminal.putCharacter(' ');
+                                terminal.putCharacter(StringToChar(cryptoChar.guessedChar()));
                                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
                             }
                         }
@@ -231,27 +249,18 @@ public class CryptoSolver {
                 if (key.getKind() == Key.Kind.ArrowLeft){
                     if (currentCryptoChar.index() == 0){ //if it's just on the verge of out of bounds
                         currentCryptoChar = CryptoCharacters.get(CryptoCharacters.size() - 1); //then loop back to end
+                        cursorX+= CryptoCharacters.size();
                     } else {
                         currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()-1); //else last cryptochar
+                        cursorX--;
                     }
                     for (int i = 0; i < CryptoCharacters.size(); i++){ //cleans the board of terminal color before replacing stuff with blue
                         CryptoCharacter cleaningCryptoChar = CryptoCharacters.get(i);
                         if (letters.contains(cleaningCryptoChar.character())){
                             terminal.moveCursor(cleaningCryptoChar.x(), cleaningCryptoChar.y());
                             terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
-                            terminal.putCharacter(' '); //find a way to find previous guesses
+                            terminal.putCharacter(StringToChar(cleaningCryptoChar.guessedChar()));
                         }
-                    }
-                    if (currentCryptoChar.index() != CryptoCharacters.size() - 1){
-                        if (letters.contains(CryptoCharacters.get(currentCryptoChar.index()+1).character())){ //if next character isn't in list
-                            terminal.moveCursor(currentCryptoChar.x()+1, currentCryptoChar.y());
-                            terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
-                            terminal.putCharacter(' '); //change later to preserve previous guesses
-                        }
-                    } else {
-                        terminal.moveCursor(CryptoCharacters.get(0).x(), CryptoCharacters.get(0).y()); //moves to end
-                        terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
-                        terminal.putCharacter(' '); //change later to preserve previous guesses
                     }
                     terminal.moveCursor(currentCryptoChar.x(), currentCryptoChar.y());
                     x = currentCryptoChar.x();
@@ -268,8 +277,23 @@ public class CryptoSolver {
                             if (cryptoChar.character().equals(desiredChar)){
                                 terminal.moveCursor(cryptoChar.x(),cryptoChar.y());
                                 terminal.applyBackgroundColor(Terminal.Color.GREEN);
-                                terminal.putCharacter(' ');
+                                terminal.putCharacter(StringToChar(cryptoChar.guessedChar()));
                                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
+                            }
+                        }
+                    }
+                }
+
+                if (key.getKind() == Key.Kind.Escape){
+                    terminal.exitPrivateMode();
+                }
+
+                if (letters.toLowerCase().contains(CharToString(key.getCharacter()))){
+                    for (int i = 0; i < CryptoCharacters.size(); i++){
+                        CryptoCharacter parsingChar = CryptoCharacters.get(i);
+                        if (cursorX == parsingChar.x() && cursorY == parsingChar.y()){
+                            if (letters.contains(parsingChar.character())){ //if your current position isn't hovering over an empty space...
+                                placeLetter(cursorX, cursorY, key);
                             }
                         }
                     }
@@ -285,14 +309,5 @@ public class CryptoSolver {
         }
 
 
-    }
-
-    public static char bashKeyCode(Key key){
-        for (int i = 0; i < letters.length(); i++){
-            if (key.getCharacter() == letters.charAt(i)){
-                return letters.charAt(i);
-            }
-        }
-        return '\0';
     }
 }

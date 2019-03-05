@@ -3,12 +3,14 @@ public class CryptoCharacter{
     private int y;
     private String character;
     private int index;
+    private String guessedChar;
 
     public CryptoCharacter(int x, int y, int index, String c){
         this.x = x;
         this.y = y;
         character = c;
         this.index = index;
+        guessedChar = " ";
     }
 
     public int x(){
@@ -26,4 +28,16 @@ public class CryptoCharacter{
     public int index(){
         return index;
     }
+
+    public String guessedChar(){
+        return guessedChar;
+    }
+
+    public void setGuessedChar(String s){
+        guessedChar = s;
+    }
 }
+
+//cant tab huh
+//also need to implement autosolution tracker
+//and implement which chars been used
