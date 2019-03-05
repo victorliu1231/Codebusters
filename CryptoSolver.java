@@ -59,15 +59,17 @@ public class CryptoSolver {
         crypto = cipher.crypto();
         terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
         for (int i = 0; i < crypto.length(); i++){
+            CryptoCharacter cryptoCharInitialize = new CryptoCharacter(x,y,i,crypto.substring(i,i+1));
+            CryptoCharacters.add(cryptoCharInitialize);
             terminal.moveCursor(x,y);
             if (!letters.contains(crypto.substring(i,i+1))){
+                cryptoCharInitialize.setGuessedChar(crypto.substring(i,i+1));
                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
                 terminal.putCharacter(crypto.charAt(i));
                 terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
             } else {
                 terminal.putCharacter(' ');
             }
-            CryptoCharacters.add(new CryptoCharacter(x,y,i,crypto.substring(i,i+1)));
             x++;
         }
         y++;
@@ -351,12 +353,21 @@ public class CryptoSolver {
                 }
 
                 if (key.getKind() == Key.Kind.Enter){ //checks the solution
+                    endTime = System.currentTimeMillis();
                     String guessedSolution = "";
                     for (int i = 0; i < CryptoCharacters.size(); i++){
-                        guessedSolution+= CryptoCharacters.get(i).character();
+                        guessedSolution+= CryptoCharacters.get(i).guessedChar();
                     }
-                    if (guessedSolution.equals(cipher.solution())){
+                    if (guessedSolution.toUpperCase().equals(cipher.solution())){
                         terminal.exitPrivateMode();
+                        long timer = endTime - startTime;
+                        timer = timer / 1000;
+                        minutes = String.valueOf(timer / 60);
+                        String seconds = String.valueOf(timer % 60);
+                        if (seconds.length() < 2){
+                            seconds = "0" + seconds; //to fix the seconds notation
+                        }
+                        minutes+= ":"+seconds;
                         System.out.println("Hooray! You solved it!");
                         System.out.println("Time: "+minutes);
                         System.out.println();
@@ -364,8 +375,8 @@ public class CryptoSolver {
                     } else {
                         messageTiming = true;
                         startMessageTimeMillis = System.currentTimeMillis();
-                        System.out.println(guessedSolution);
-                        System.out.println(cipher.solution()); //will comment out later
+                        terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
+                        terminal.applyForegroundColor(Terminal.Color.DEFAULT);
                         putString(10,20,"Sorry, that's not correct!");
                     }
                 }
