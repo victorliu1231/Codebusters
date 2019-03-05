@@ -29,6 +29,10 @@ public class CryptoSolver {
     public static ArrayList<CryptoCharacter> menuCryptChars = new ArrayList<CryptoCharacter>();
     public static String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static String lowercaseLetters = letters.toLowerCase();
+    public static CryptoCharacter currentCryptoChar;
+    public static String desiredChar;
+    public static int cursorX;
+    public static boolean isBufferOn = false;
 
     public static void putString(int r, int c, String s){
         terminal.moveCursor(r,c);
@@ -166,6 +170,8 @@ public class CryptoSolver {
             }
             menuX++;
         }
+        isBufferOn = true;
+        moveRight();
     }
 
     //pre-condition: String must be in the "letters" category or its corresponding lowercase category and has to have length 1
@@ -196,6 +202,47 @@ public class CryptoSolver {
         }
         return " ";
     }
+
+    public static void moveRight(){
+        if (currentCryptoChar.index() == CryptoCharacters.size() - 1){ //if it's just on the verge of out of bounds
+            currentCryptoChar = CryptoCharacters.get(0); //then loop back to beginning
+            cursorX = 10;
+        } else {
+            currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()+1); //else next cryptochar
+            cursorX++;
+        }
+        for (int i = 0; i < CryptoCharacters.size(); i++){ //cleans the board of terminal color before replacing stuff with magenta
+            CryptoCharacter cleaningCryptoChar = CryptoCharacters.get(i);
+            if (letters.contains(cleaningCryptoChar.character())){
+                terminal.moveCursor(cleaningCryptoChar.x(), cleaningCryptoChar.y());
+                terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
+                terminal.putCharacter(StringToChar(cleaningCryptoChar.guessedChar()));
+            }
+        }
+        terminal.moveCursor(currentCryptoChar.x(), currentCryptoChar.y());
+        x = currentCryptoChar.x();
+        y = currentCryptoChar.y();
+        if (letters.contains(currentCryptoChar.character())){
+            for (int i = 0; i < CryptoCharacters.size(); i++){ //finding the CryptoCharacter the mouse is hovering over
+                CryptoCharacter cryptoChar = CryptoCharacters.get(i);
+                if (cryptoChar.x() == x && cryptoChar.y() == y){
+                    desiredChar = cryptoChar.character();
+                }
+            }
+            for (int i = 0; i < CryptoCharacters.size(); i++){ //makes all the common CryptoChars green
+                CryptoCharacter cryptoChar = CryptoCharacters.get(i);
+                if (cryptoChar.character().equals(desiredChar)){
+                    terminal.moveCursor(cryptoChar.x(),cryptoChar.y());
+                    terminal.applyBackgroundColor(Terminal.Color.GREEN);
+                    terminal.putCharacter(StringToChar(cryptoChar.guessedChar()));
+                    terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
+                }
+            }
+            terminal.moveCursor(x,y);
+            terminal.applyBackgroundColor(Terminal.Color.BLUE);
+            terminal.putCharacter(StringToChar(currentCryptoChar.guessedChar()));
+        }
+    }
     
     public static void main(String[] args) {
 
@@ -225,7 +272,7 @@ public class CryptoSolver {
         boolean toggleTimeDisplay = false;
         long endTime;
         long lastTime = System.currentTimeMillis();
-        String desiredChar = CryptoCharacters.get(0).character();
+        desiredChar = CryptoCharacters.get(0).character();
         for (int i = 0; i < CryptoCharacters.size(); i++){ //makes all the common CryptoChars green
             CryptoCharacter cryptoChar = CryptoCharacters.get(i);
             if (cryptoChar.character().equals(desiredChar)){
@@ -239,10 +286,10 @@ public class CryptoSolver {
         terminal.moveCursor(10,10);
         terminal.putCharacter(' ');
         terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
-        CryptoCharacter currentCryptoChar = CryptoCharacters.get(0);
+        currentCryptoChar = CryptoCharacters.get(0);
         putString(5,5,"Press Tab to toggle on display of time!");
         putString(5,6,"Press Enter to check your solution!");
-        int cursorX = 10;
+        cursorX = 10;
         int cursorY = 10;
         String minutes = "";
         boolean messageTiming = false;
@@ -308,50 +355,15 @@ public class CryptoSolver {
                     } else {
                         messageTiming = true;
                         startMessageTimeMillis = System.currentTimeMillis();
+                        System.out.println(guessedSolution);
+                        System.out.println(cipher.solution()); //will comment out later
                         putString(10,20,"Sorry, that's not correct!");
                     }
                 }
 
 
                 if (key.getKind() == Key.Kind.ArrowRight){
-                    if (currentCryptoChar.index() == CryptoCharacters.size() - 1){ //if it's just on the verge of out of bounds
-                        currentCryptoChar = CryptoCharacters.get(0); //then loop back to beginning
-                        cursorX = 10;
-                    } else {
-                        currentCryptoChar = CryptoCharacters.get(currentCryptoChar.index()+1); //else next cryptochar
-                        cursorX++;
-                    }
-                    for (int i = 0; i < CryptoCharacters.size(); i++){ //cleans the board of terminal color before replacing stuff with blue
-                        CryptoCharacter cleaningCryptoChar = CryptoCharacters.get(i);
-                        if (letters.contains(cleaningCryptoChar.character())){
-                            terminal.moveCursor(cleaningCryptoChar.x(), cleaningCryptoChar.y());
-                            terminal.applyBackgroundColor(Terminal.Color.MAGENTA);
-                            terminal.putCharacter(StringToChar(cleaningCryptoChar.guessedChar()));
-                        }
-                    }
-                    terminal.moveCursor(currentCryptoChar.x(), currentCryptoChar.y());
-                    x = currentCryptoChar.x();
-                    y = currentCryptoChar.y();
-                    if (letters.contains(currentCryptoChar.character())){
-                        for (int i = 0; i < CryptoCharacters.size(); i++){ //finding the CryptoCharacter the mouse is hovering over
-                            CryptoCharacter cryptoChar = CryptoCharacters.get(i);
-                            if (cryptoChar.x() == x && cryptoChar.y() == y){
-                                desiredChar = cryptoChar.character();
-                            }
-                        }
-                        for (int i = 0; i < CryptoCharacters.size(); i++){ //makes all the common CryptoChars green
-                            CryptoCharacter cryptoChar = CryptoCharacters.get(i);
-                            if (cryptoChar.character().equals(desiredChar)){
-                                terminal.moveCursor(cryptoChar.x(),cryptoChar.y());
-                                terminal.applyBackgroundColor(Terminal.Color.GREEN);
-                                terminal.putCharacter(StringToChar(cryptoChar.guessedChar()));
-                                terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
-                            }
-                        }
-                        terminal.moveCursor(x,y);
-                        terminal.applyBackgroundColor(Terminal.Color.BLUE);
-                        terminal.putCharacter(StringToChar(currentCryptoChar.guessedChar()));
-                    }
+                    moveRight();
                 }
 
                 if (key.getKind() == Key.Kind.ArrowLeft){
@@ -411,11 +423,14 @@ public class CryptoSolver {
                 }
 
                 if (lowercaseLetters.contains(CharToString(key.getCharacter()))){
+                    isBufferOn = false;
                     for (int i = 0; i < CryptoCharacters.size(); i++){
                         CryptoCharacter parsingChar = CryptoCharacters.get(i);
                         if (cursorX == parsingChar.x() && cursorY == parsingChar.y()){
                             if (letters.contains(parsingChar.character())){ //if your current position isn't hovering over an empty space...
-                                placeLetter(cursorX, cursorY, key);
+                                if (!isBufferOn){ 
+                                    placeLetter(cursorX, cursorY, key);
+                                }
                             }
                         }
                     }
