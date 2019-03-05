@@ -13,6 +13,14 @@ public class CryptoCharacter{
         guessedChar = " ";
     }
 
+    public CryptoCharacter(int x, int y, int index, String c, String guessedChar){
+        this.x = x;
+        this.y = y;
+        character = c;
+        this.index = index;
+        this.guessedChar = guessedChar;
+    }
+
     public int x(){
         return x;
     }
@@ -39,5 +47,3 @@ public class CryptoCharacter{
 }
 
 //also need to implement autosolution tracker
-//and implement which chars been used
-//and implement when u have placed a char that already has been taken (via red mark)

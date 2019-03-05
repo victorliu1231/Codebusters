@@ -26,6 +26,7 @@ public class CryptoSolver {
     public static int y = 10;
     public static String crypto;
     public static ArrayList<CryptoCharacter> CryptoCharacters = new ArrayList<CryptoCharacter>();
+    public static ArrayList<CryptoCharacter> menuCryptChars = new ArrayList<CryptoCharacter>();
     public static String letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static String lowercaseLetters = letters.toLowerCase();
 
@@ -73,6 +74,15 @@ public class CryptoSolver {
             terminal.putCharacter(crypto.charAt(i));
             x++;
         }
+        x = 5;
+        y = 17;
+        //instantiating the menu cryptochars
+        for (int i = 0; i < letters.length(); i++){
+            menuCryptChars.add(new CryptoCharacter(x, y, i, letters.substring(i,i+1), "0"));
+            terminal.moveCursor(x,y);
+            terminal.putCharacter(letters.charAt(i));
+            x++;
+        }
     }
 
     //pre-condition: the character inserted must be part of the "letters" container
@@ -99,22 +109,31 @@ public class CryptoSolver {
                     letterBeingDeleted = cryptoChar.guessedChar();
                     cryptoCharToBeDeleted = cryptoChar;
                 } else {
+                    //checks if letter is already used
+                    for (int index = 0; index < menuCryptChars.size(); index++){
+                        if (CharToString(letter).equals(menuCryptChars.get(index).character().toLowerCase())){
+                            if (menuCryptChars.get(index).guessedChar().equals("1")){
+                                terminal.applyForegroundColor(Terminal.Color.RED);
+                            }
+                        }
+                    }
                     terminal.putCharacter(letter);
                     cryptoChar.setGuessedChar(CharToString(letter));
                 }
                 terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
+                terminal.applyForegroundColor(Terminal.Color.DEFAULT);
             }
         }
         //now to indicate which letters have been used
         int menuX = 5;
         int menuY = 17;
-        System.out.println(StringToChar(letterBeingDeleted.toUpperCase()));
         for (int i = 0; i < letters.length(); i++){
             if (key.getKind() == Key.Kind.Backspace){
-                if (letterBeingDeleted.equals(lowercaseLetters.substring(i,i+1))){
+                if (letterBeingDeleted.equals(lowercaseLetters.substring(i,i+1)) && menuCryptChars.get(i).guessedChar().equals("1")){
                     terminal.moveCursor(menuX, menuY);
                     terminal.applyForegroundColor(Terminal.Color.DEFAULT);
                     terminal.putCharacter(StringToChar(letterBeingDeleted.toUpperCase()));
+                    menuCryptChars.get(i).setGuessedChar("0"); //0 indicates letter is not used
                 }
             } else {
                 if (lowercaseLetters.charAt(i) == letter){
@@ -122,6 +141,8 @@ public class CryptoSolver {
                     terminal.applyForegroundColor(Terminal.Color.BLUE);
                     terminal.putCharacter(StringToChar(CharToString(letter).toUpperCase()));
                     terminal.applyForegroundColor(Terminal.Color.DEFAULT);
+                    int currentGuessedChar = Integer.parseInt(menuCryptChars.get(i).guessedChar());
+                    menuCryptChars.get(i).setGuessedChar(""+(currentGuessedChar+1)); //any number > 0 just indicates letter is already used
                 }
             }
             menuX++;
@@ -199,7 +220,6 @@ public class CryptoSolver {
         terminal.applyBackgroundColor(Terminal.Color.DEFAULT);
         CryptoCharacter currentCryptoChar = CryptoCharacters.get(0);
         putString(5,5,"Press Tab to toggle on display of time!");
-        putString(5,17,letters);
         int cursorX = 10;
         int cursorY = 10;
 
